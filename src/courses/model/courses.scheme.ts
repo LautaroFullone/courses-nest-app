@@ -7,7 +7,7 @@ export type CourseDocument = HydratedDocument<Course>;
 export class Course {
 
     @Prop({ required: true })
-    name: string;
+    title: string;
 
     @Prop()
     price: number;
@@ -18,8 +18,8 @@ export class Course {
     @Prop()
     cover: string
 
-    @Prop()
-    idAuthor: mongoose.Types.ObjectId;
+    // @Prop()
+    // idAuthor: mongoose.Types.ObjectId;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

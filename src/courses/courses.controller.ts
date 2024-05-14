@@ -20,7 +20,7 @@ export class CoursesController {
     if(price===999)
       throw new HttpException('El precio es demasiado alto', HttpStatus.FORBIDDEN)
      
-    return create
+    return this.coursesService.create(create)
   }
 
   @Get(':title')
