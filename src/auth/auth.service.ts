@@ -14,29 +14,25 @@ export class AuthService {
                 @InjectModel(User.name) private readonly userModel: Model<UserDocument>) { }
 
     public async handleLogin(userBody: LoginAuthDto) {
-        const { password } = userBody;
         const userExist = await this.userModel.findOne({email: userBody.email});
 
         if (!userExist) throw new HttpException('El usuario no existe', HttpStatus.NOT_FOUND);
 
-        const check = await compareHash(password, userExist.password)
+        const check = await compareHash(userBody.password, userExist.password)
         if (!check) throw new HttpException('Contraseña incorrecta', HttpStatus.FORBIDDEN);
 
-        const userFlat = userExist.toObject()
-        delete userFlat.password;
+        const { password, ...userWithOutPass } = userExist.toObject();
 
         const payload = {
-            id: userFlat._id,
+            id: userWithOutPass._id,
         }
 
         const token = this.jwtService.sign(payload)
 
-        const data = {
+        return {
             token,
-            user: userFlat
+            user: userWithOutPass
         }
-
-        return data
     }
 
     public async handleRegister(userBody: RegisterAuthDto) {
