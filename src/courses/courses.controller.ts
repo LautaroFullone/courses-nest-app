@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe, UseGuards, Req, SetMetadata } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -7,9 +7,11 @@ import { SlugPipe } from './pipes/slug/slug.pipe';
 import { BrowserAgentGuard } from 'src/guards/browser-agent/browser-agent.guard';
 import { JwtGuardGuard } from 'src/guards/jwt-guard/jwt-guard.guard';
 import { Request } from 'express';
+import { RolesGuard } from 'src/guards/roles/roles.guard';
+import { AllowedRoles } from 'src/decorators/allowed-roles.decorator';
 
 @ApiTags('courses')
-@UseGuards(BrowserAgentGuard, JwtGuardGuard)
+@UseGuards(BrowserAgentGuard, JwtGuardGuard, RolesGuard)
 @Controller('courses')
 export class CoursesController {
   
@@ -17,9 +19,9 @@ export class CoursesController {
 
   @Post()
   @HttpCode(221)
+  @AllowedRoles('admin')   //@SetMetadata('allowed-roles', 'admin') //esto es lo mismo sin usar el custom decorator
   create(@Req() req: Request, @Body() create: CreateCourseDto) {
 
-    console.log('insert course: ', req.user)
     const {price} = create;
     
     if(price===999)
@@ -29,6 +31,7 @@ export class CoursesController {
   }
 
   @Get(':title')
+  //no pongo @AllowedRoles porque cualquiera puede hacer un get
   getDetail(@Param('title', new SlugPipe()) title: string) {
     console.log('title: ', title)
     return this.coursesService.findOne(1);
