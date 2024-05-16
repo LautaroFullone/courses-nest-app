@@ -1,22 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { SlugPipe } from './pipes/slug/slug.pipe';
 import { BrowserAgentGuard } from 'src/guards/browser-agent/browser-agent.guard';
+import { JwtGuardGuard } from 'src/guards/jwt-guard/jwt-guard.guard';
+import { Request } from 'express';
 
 @ApiTags('courses')
-@UseGuards(BrowserAgentGuard)
+@UseGuards(BrowserAgentGuard, JwtGuardGuard)
 @Controller('courses')
 export class CoursesController {
+  
   constructor(private readonly coursesService: CoursesService) {}
-
 
   @Post()
   @HttpCode(221)
-  create(@Body() create: CreateCourseDto) {
+  create(@Req() req: Request, @Body() create: CreateCourseDto) {
 
+    console.log('insert course: ', req.user)
     const {price} = create;
     
     if(price===999)

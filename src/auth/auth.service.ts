@@ -23,6 +23,7 @@ export class AuthService {
 
         const { password, ...userWithOutPass } = userExist.toObject();
 
+        //esto es lo que mando a codificar al token, info a la que accedo dsp en jwt.strategy !!
         const payload = {
             id: userWithOutPass._id,
         }
