@@ -15,12 +15,18 @@ import { EventMailModule } from './event-mail/event-mail.module';
 
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
+    EventEmitterModule.forRoot(), //para los events de la app
     ConfigModule.forRoot({ isGlobal: true }),
-    ServeStaticModule.forRoot({
+    ServeStaticModule.forRoot({  //para mostrar el static resource en caso de apuntar a localhost:3030/
       rootPath: join(__dirname, '..', 'client')
     }),
-    MongooseModule.forRoot(process.env.DB_URI),
+    MongooseModule.forRoot(process.env.DB_URI, { 
+      connectionFactory: (connection) => {     //para el soft-delete de modelos de manera global
+        const pluginsOptions = { overrideMethods: 'all' } //no retorna los eliminadoss
+        connection.plugin(require('mongoose-delete'), pluginsOptions);
+        return connection;
+      }
+    }),
     CoursesModule, 
     AuthModule, 
     VideosModule, 

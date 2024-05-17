@@ -30,11 +30,23 @@ export class CoursesController {
     return this.coursesService.create(create)
   }
 
-  @Get(':title')
+  @Get(':title') @HttpCode(200)
   //no pongo @AllowedRoles porque cualquiera puede hacer un get
   getDetail(@Param('title', new SlugPipe()) title: string) {
     console.log('title: ', title)
     return this.coursesService.findOne(1);
+  }
+
+  @Get('') @HttpCode(200)
+  @AllowedRoles('admin', 'user', 'manager')   
+  getListCourses() {
+    return this.coursesService.findAll();
+  }
+
+  @Delete(':id') @HttpCode(200)
+  @AllowedRoles('admin', 'user', 'manager')
+  deleteCourse(@Param('id') id: string) {
+    return this.coursesService.remove(id);
   }
 
   // @Get(':id')
