@@ -6,13 +6,20 @@ import { RegisterAuthDto } from './dto/register-auth.dto';
 import { compareHash, generateHash } from './utils/handleBcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class AuthService {
 
-    constructor(private readonly jwtService: JwtService, 
+    constructor(private readonly jwtService: JwtService,
+                private readonly eventEmitter: EventEmitter2, 
                 @InjectModel(User.name) private readonly userModel: Model<UserDocument>) { }
-
+    
+    /**
+     * Loguear un usuario
+     * @param userBody 
+     * @returns 
+     */
     public async handleLogin(userBody: LoginAuthDto) {
         const userExist = await this.userModel.findOne({email: userBody.email});
 
@@ -30,12 +37,22 @@ export class AuthService {
 
         const token = this.jwtService.sign(payload)
 
-        return {
+        const loginData = {
             token,
             user: userWithOutPass
         }
+
+        //enviar evento de email
+        this.eventEmitter.emit('user.login', loginData)
+
+        return loginData
     }
 
+    /**
+     * Registrar un usuario
+     * @param userBody 
+     * @returns 
+     */
     public async handleRegister(userBody: RegisterAuthDto) {
         const { password, ...user } = userBody;
 
@@ -43,6 +60,12 @@ export class AuthService {
             ...user, 
             password: await generateHash(password)
         }
-        return this.userModel.create(userParse)
+
+        const newUser = this.userModel.create(userParse)
+
+        //enviar evento de email
+        this.eventEmitter.emit('user.register', newUser)
+
+        return newUser;
     }
 }
