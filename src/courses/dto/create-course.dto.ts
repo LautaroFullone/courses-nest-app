@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsUrl } from "class-validator";
+import { IsNotEmpty, IsUUID, IsUrl } from "class-validator";
 
 export class CreateCourseDto {
 
@@ -19,4 +19,9 @@ export class CreateCourseDto {
     @IsNotEmpty()
     @IsUrl()
     cover: string
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    idAuthor: string
 }

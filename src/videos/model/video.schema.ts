@@ -1,10 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { v4 as uuid } from 'uuid'
 
 export type VideoDocument = HydratedDocument<Video>;
 
 @Schema({ timestamps: true })
 export class Video {
+
+    @Prop({
+        unique: true,
+        default: uuid
+    })
+    id: string
 
     @Prop()
     title: string;

@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Course, CourseDocument } from './model/courses.scheme';
+import { Course, CourseDocument } from './model/courses.schema';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from 'src/users/model/user.schema';
 
 interface ModelExt<T> extends Model<T>{
-  delete: Function
+  delete: Function;
+  findAllCourses: Function
 }
 
 @Injectable()
@@ -16,15 +17,13 @@ export class CoursesService {
   constructor(@InjectModel(Course.name) private readonly courseModel: ModelExt<CourseDocument>,
               @InjectModel(User.name) private readonly userModule: ModelExt<UserDocument>) { }
 
-  
   create(createCourseDto: CreateCourseDto) {
     const user = this.userModule.find();
     return this.courseModel.create(createCourseDto); 
   }
 
   findAll() {
-    const coursesList = this.courseModel.find()
-    return coursesList;
+    return this.courseModel.findAllCourses();
   }
 
   findOne(id: number) {
