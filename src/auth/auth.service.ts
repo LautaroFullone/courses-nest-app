@@ -61,7 +61,7 @@ export class AuthService {
             password: await generateHash(password)
         }
 
-        const newUser = this.userModel.create(userParse)
+        const newUser = await this.userModel.create(userParse)
 
         //enviar evento de email
         this.eventEmitter.emit('user.register', newUser)

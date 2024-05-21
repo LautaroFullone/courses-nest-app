@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventMailModule } from './event-mail/event-mail.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -30,7 +31,10 @@ import { EventMailModule } from './event-mail/event-mail.module';
     CoursesModule, 
     AuthModule, 
     VideosModule, 
-    AwardsModule, UsersModule, EventMailModule, 
+    AwardsModule, 
+    UsersModule, 
+    EventMailModule, 
+    MailModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
