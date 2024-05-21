@@ -26,12 +26,16 @@ export class CoursesService {
     return this.courseModel.findAllCourses();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: string) {
+    return this.courseModel.findOne({id})
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  update(id: string, updateCourseDto: UpdateCourseDto) {
+    return this.courseModel.findOneAndUpdate({ id }, updateCourseDto, 
+      { 
+        upsert: true, //si no existe, lo crea
+        new: true //retorna el documento editado (el new)
+      })
   }
 
   async remove(id: string) {

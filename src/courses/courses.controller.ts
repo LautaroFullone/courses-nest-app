@@ -20,7 +20,7 @@ export class CoursesController {
   @Post()
   @HttpCode(221)
   @AllowedRoles('admin')   //@SetMetadata('allowed-roles', 'admin') //esto es lo mismo sin usar el custom decorator
-  create(@Req() req: Request, @Body() create: CreateCourseDto) {
+  create(@Body() create: CreateCourseDto) {
 
     const {price} = create;
     
@@ -30,12 +30,24 @@ export class CoursesController {
     return this.coursesService.create(create)
   }
 
-  @Get(':title') @HttpCode(200)
-  //no pongo @AllowedRoles porque cualquiera puede hacer un get
-  getDetail(@Param('title', new SlugPipe()) title: string) {
-    console.log('title: ', title)
-    return this.coursesService.findOne(1);
+  @Get(':id') @HttpCode(200)
+  @AllowedRoles('admin', 'user', 'manager') 
+  getDetail(@Param('id') id: string) {
+    return this.coursesService.findOne(id);
   }
+
+  @Patch(':id') @HttpCode(200)
+  @AllowedRoles('admin', 'user', 'manager')
+  updateCourse(@Param('id') id: string, @Body() updateCourse: UpdateCourseDto) {
+    return this.coursesService.update(id, updateCourse);
+  }
+
+  // @Get(':title') @HttpCode(200)
+  // //no pongo @AllowedRoles porque cualquiera puede hacer un get
+  // getDetail(@Param('title', new SlugPipe()) title: string) {
+  //   console.log('title: ', title)
+  //   return this.coursesService.findOne(1);
+  // }
 
   @Get('') @HttpCode(200)
   @AllowedRoles('admin', 'user', 'manager')   
