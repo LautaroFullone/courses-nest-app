@@ -14,11 +14,9 @@ interface ModelExt<T> extends Model<T>{
 @Injectable()
 export class CoursesService {
 
-  constructor(@InjectModel(Course.name) private readonly courseModel: ModelExt<CourseDocument>,
-              @InjectModel(User.name) private readonly userModule: ModelExt<UserDocument>) { }
+  constructor(@InjectModel(Course.name) private readonly courseModel: ModelExt<CourseDocument>) { }
 
   create(createCourseDto: CreateCourseDto) {
-    const user = this.userModule.find();
     return this.courseModel.create(createCourseDto); 
   }
 

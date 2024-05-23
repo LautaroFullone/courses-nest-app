@@ -19,14 +19,17 @@ export class Video {
     @Prop()
     description: string;
 
-    @Prop()
+    @Prop({ default: null })
     source: string;
 
-    @Prop()
+    @Prop({ default: 0 })
     score: number;
 
-    @Prop()
-    idCourse: mongoose.Types.ObjectId;
+    @Prop({ required: true })
+    idCourse: string
+    
+    // @Prop()
+    // idCourse: mongoose.Types.ObjectId;
 }
 
 export const VideoSchema = SchemaFactory.createForClass(Video);

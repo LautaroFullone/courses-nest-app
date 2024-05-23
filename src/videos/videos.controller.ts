@@ -1,52 +1,63 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { LoggerInterceptor } from 'src/utils/logger.interceptor';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storage } from 'src/utils/media.handle';
-import { CoursesService } from 'src/courses/courses.service';
+import { JwtGuardGuard } from 'src/guards/jwt-guard/jwt-guard.guard';
+import { RolesGuard } from 'src/guards/roles/roles.guard';
+import { AllowedRoles } from 'src/decorators/allowed-roles.decorator';
 
 @ApiTags('videos')
-@UseInterceptors(LoggerInterceptor)
+//@UseInterceptors(LoggerInterceptor)
+@UseGuards(JwtGuardGuard, RolesGuard)
 @Controller('videos')
-//TODO: @UsePipes(new ValidationPipe())
 export class VideosController {
-  constructor(private readonly videosService: VideosService, private readonly coursesService: CoursesService) {}
 
-  @Post()
+  constructor(private readonly videosService: VideosService) {}
+
+  @Post() 
+  @AllowedRoles('admin')
   create(@Body() createVideoDto: CreateVideoDto) {
-    console.log('create body: ',createVideoDto)
     return this.videosService.create(createVideoDto);
   }
 
-  @Post('upload')
+  @Post('upload/:id') 
+  @AllowedRoles('admin')
   @UseInterceptors(FileInterceptor('my-file', { storage }))
-  handleUpload(@UploadedFile() file: Express.Multer.File) {
-    console.log('file: ', file)
+  upload(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+    return this.videosService.addVideo(id, file.filename)
   } 
 
   @Get()
-  findAll(@Query('description') query: string) { //TODO: http://localhost:3000/videos?id=6&descripcion=holalauti
-    // console.log(query)
-
+  @AllowedRoles('admin', 'user', 'manager')
+  findAll() { 
     return this.videosService.findAll();
   }
 
   @Get(':id')
+  @AllowedRoles('admin', 'user', 'manager')
   findOne(@Param('id') id: string) {
-    // console.log(id)
-    return this.videosService.findOne(+id);
+    return this.videosService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateVideoDto: UpdateVideoDto) {
-    return this.videosService.update(+id, updateVideoDto);
+    return this.videosService.update(id, updateVideoDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.videosService.remove(+id);
+    return this.videosService.remove(id);
   }
+
+  // @Get()
+  // @AllowedRoles('admin', 'user', 'manager')
+  // findAll(@Query('description') query: string) { //TODO: http://localhost:3000/videos?id=6&descripcion=holalauti
+  //   // console.log(query)
+
+  //   return this.videosService.findAll();
+  // }
+
 }
