@@ -30,7 +30,7 @@ async function bootstrap() {
 
   console.log('__ENV__', process.env.PORT)
   
-  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(new ValidationPipe()) //para aplicar las validationes de dtos a todos los models
   
   await app.listen(3000);
 }

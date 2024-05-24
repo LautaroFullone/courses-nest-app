@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { RolesGuard } from 'src/guards/roles/roles.guard';
 import { AllowedRoles } from 'src/decorators/allowed-roles.decorator';
 
-@ApiTags('courses')
+@ApiTags('courses') //swagger groups
 @UseGuards(BrowserAgentGuard, JwtGuardGuard, RolesGuard)
 @Controller('courses')
 export class CoursesController {
